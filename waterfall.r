@@ -49,10 +49,14 @@ glimpse(balance)
 
 strwr <- function(str) gsub(" ", "\n", str)
 
-(p1 <- ggplot(balance, aes(fill = type)) + 
-         geom_rect(aes(description, xmin = id - 0.45, xmax = id + 0.45, 
-                       ymin = end, ymax = start)) + 
-         scale_y_continuous("", labels = "comma") +
+ggplot(balance, aes(fill = type)) + 
+  geom_rect(aes(xmin = id - 0.45, xmax = id + 0.45, 
+                ymin = end, ymax = start)) +
+  scale_x_discrete("", breaks = levels(balance$description), 
+                   labels = (balance$description))
+
+
++
          scale_x_discrete("", breaks = levels(balance$desc), 
                           labels = strwr(levels(balance$desc))) +
          theme(legend.position = "none"))
