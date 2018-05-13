@@ -4,13 +4,13 @@
 #
 # Location: /Users/raymondtse/Dropbox/Analysis/Waterfall Charts/waterfall.r
 # First created: 20:50 - Friday 30 March 2018
-# Last modified: 00:17 - Sunday 13 May 2018
+# Last modified: 22:49 - Sunday 13 May 2018
 # ------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------
 # System time 
 # ------------------------------------------------------------------------
-format(Sys.time(), "Fri Mar 30 20:49:29 2018")
+format(Sys.time(), "%a %b %d %H:%M:%S %Y")
 
 # ------------------------------------------------------------------------
 # Session Info
@@ -21,6 +21,13 @@ devtools::session_info()
 # Libraries
 # ------------------------------------------------------------------------
 library(tidyverse)
+
+
+# ------------------------------------------------------------------------
+# BACKLOG
+# ------------------------------------------------------------------------
+# Create function
+
 
 # ------------------------------------------------------------------------
 # Sample Data
@@ -48,20 +55,20 @@ balance <- balance[, c(3, 1, 4, 6, 5, 2)]
 
 glimpse(balance)
 
+# ------------------------------------------------------------------------
+# Create Waterfall Chart
+# ------------------------------------------------------------------------
 strwr <- function(str) gsub(" ", "\n", str)
 
-ggplot(balance, aes(description, fill = type)) +
-  geom_rect(aes(description, xmin = id - 0.45, xmax = id + 0.45, ymin = end,
-                ymax = start))
-
 ggplot(balance, aes(fill = type)) +
-  geom_rect(aes(description, xmin = id - 0.45, xmax = id + 0.45, ymin = end,
+  geom_rect(aes(fct_inorder(description), xmin = id - 0.45, xmax = id + 0.45, ymin = end,
                 ymax = start)) +
   scale_y_continuous("", labels = scales::comma_format()) +
   scale_x_discrete("", breaks = levels(balance$description),
                      labels = strwr(levels(balance$description))) +
-  theme(legend.position = "none")
-
-
-
-
+  theme(legend.position = "none") +
+  geom_text(data = filter(balance, type == "in"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
+  geom_text(data = filter(balance, type == "out"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
+  geom_text(data = filter(balance, type == "net" & id == min(id)), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
+  geom_text(data = filter(balance, type == "net" & id == max(id)), aes(id, start, label = scales::comma(amount)), vjust = -0.5, size = 3)
+  
