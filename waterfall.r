@@ -4,7 +4,7 @@
 #
 # Location: /Users/raymondtse/Dropbox/Analysis/Waterfall Charts/waterfall.r
 # First created: 20:50 - Friday 30 March 2018
-# Last modified: 22:49 - Sunday 13 May 2018
+# Last modified: 23:44 - Sunday 13 May 2018
 # ------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------
@@ -22,12 +22,9 @@ devtools::session_info()
 # ------------------------------------------------------------------------
 library(tidyverse)
 
-
 # ------------------------------------------------------------------------
 # BACKLOG
 # ------------------------------------------------------------------------
-# Create function
-
 
 # ------------------------------------------------------------------------
 # Sample Data
@@ -56,19 +53,37 @@ balance <- balance[, c(3, 1, 4, 6, 5, 2)]
 glimpse(balance)
 
 # ------------------------------------------------------------------------
-# Create Waterfall Chart
+# Create Waterfall Chart function
 # ------------------------------------------------------------------------
-strwr <- function(str) gsub(" ", "\n", str)
+waterfallChart <- function(waterfallDataSet) {
+#
+# waterfallDataSet needs the following fields:
+# - id:           a numeric ID field 
+# - description:  labels for graph
+# - type:         has values "in" for positive values
+#                 "out" for negative values
+#                 "net" for starting and end values
+# - start:        balance at start of period / activity
+# - end:          balance at end of period / activity
+# - amount:       difference in balance between end and start of period / activity
+#
 
-ggplot(balance, aes(fill = type)) +
-  geom_rect(aes(fct_inorder(description), xmin = id - 0.45, xmax = id + 0.45, ymin = end,
-                ymax = start)) +
-  scale_y_continuous("", labels = scales::comma_format()) +
-  scale_x_discrete("", breaks = levels(balance$description),
-                     labels = strwr(levels(balance$description))) +
-  theme(legend.position = "none") +
-  geom_text(data = filter(balance, type == "in"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
-  geom_text(data = filter(balance, type == "out"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
-  geom_text(data = filter(balance, type == "net" & id == min(id)), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
-  geom_text(data = filter(balance, type == "net" & id == max(id)), aes(id, start, label = scales::comma(amount)), vjust = -0.5, size = 3)
+  strwr <- function(str) gsub(" ", "\n", str)
   
+  ggplot(waterfallDataSet, aes(fill = type)) +
+    geom_rect(aes(fct_inorder(description), xmin = id - 0.45, xmax = id + 0.45, ymin = end,
+                  ymax = start)) +
+    scale_y_continuous("", labels = scales::comma_format()) +
+    scale_x_discrete("", breaks = levels(waterfallDataSet$description),
+                     labels = strwr(levels(waterfallDataSet$description))) +
+    theme(legend.position = "none") +
+    geom_text(data = filter(waterfallDataSet, type == "in"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfallDataSet, type == "out"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfallDataSet, type == "net" & id == min(id)), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfallDataSet, type == "net" & id == max(id)), aes(id, start, label = scales::comma(amount)), vjust = -0.5, size = 3)
+}
+
+# ------------------------------------------------------------------------
+# Call Waterfall Chart function
+# ------------------------------------------------------------------------
+waterfallChart(balance)
