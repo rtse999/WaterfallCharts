@@ -25,6 +25,11 @@ library(tidyverse)
 # ------------------------------------------------------------------------
 # BACKLOG
 # ------------------------------------------------------------------------
+# Add Title
+# Add formatting option: comma, dollar, ...
+# Change colours of bars - dark grey (net), dark green (in), red (out)
+# Change colours - all grey
+# Change colours - paramterised
 
 # ------------------------------------------------------------------------
 # Sample Data
