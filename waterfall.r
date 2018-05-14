@@ -56,7 +56,8 @@ glimpse(balance)
 # ------------------------------------------------------------------------
 # Create Waterfall Chart function
 # ------------------------------------------------------------------------
-waterfallChart <- function(waterfallDataSet, chartTitle = NULL, 
+waterfallChart <- function(waterfallDataSet, 
+                           chartTitle = NULL, 
                            scaleFormat = scales::dollar_format(), 
                            valueFormat = scales::dollar,
                            netColour = "dark grey",
