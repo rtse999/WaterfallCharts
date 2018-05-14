@@ -4,7 +4,7 @@
 #
 # Location: /Users/raymondtse/Dropbox/Analysis/Waterfall Charts/waterfall.r
 # First created: 20:50 - Friday 30 March 2018
-# Last modified: 23:44 - Sunday 13 May 2018
+# Last modified: 23:44 - Sunday 13 May 2018m
 # ------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------
@@ -25,8 +25,6 @@ library(tidyverse)
 # ------------------------------------------------------------------------
 # BACKLOG
 # ------------------------------------------------------------------------
-# Add formatting option: comma (comma(x), comma_format()), dollar (dollar(x), dollar_format()), ... 
-# - How do I parameterise a function ?
 # Change colours of bars - dark grey (net), dark green (in), red (out)
 # Change colours - all grey
 # Change colours - parameterised
@@ -61,7 +59,7 @@ glimpse(balance)
 # ------------------------------------------------------------------------
 # Create Waterfall Chart function
 # ------------------------------------------------------------------------
-waterfallChart <- function(waterfallDataSet, chartTitle = NULL) {
+waterfallChart <- function(waterfallDataSet, chartTitle = NULL, scaleFormat = scales::dollar_format(), valueFormat = scales::dollar) {
 #
 # waterfallDataSet needs the following fields:
 # - id:           a numeric ID field 
@@ -73,20 +71,24 @@ waterfallChart <- function(waterfallDataSet, chartTitle = NULL) {
 # - end:          balance at end of period / activity
 # - amount:       difference in balance between end and start of period / activity
 #
-
+# chartTitle      a string
+# scaleFormat     scales::comma_format() or scales::dollar_format()
+# valueFormat     scales::comma or scales::dollar
+#
+  
   strwr <- function(str) gsub(" ", "\n", str)
   
   ggplot(waterfallDataSet, aes(fill = type)) +
     geom_rect(aes(fct_inorder(description), xmin = id - 0.45, xmax = id + 0.45, ymin = end,
                   ymax = start)) +
-    scale_y_continuous("", labels = scales::comma_format()) +
+    scale_y_continuous("", labels = scaleFormat) +
     scale_x_discrete("", breaks = levels(waterfallDataSet$description),
                      labels = strwr(levels(waterfallDataSet$description))) +
     theme(legend.position = "none") +
-    geom_text(data = filter(waterfallDataSet, type == "in"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfallDataSet, type == "out"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfallDataSet, type == "net" & id == min(id)), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfallDataSet, type == "net" & id == max(id)), aes(id, start, label = scales::comma(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfallDataSet, type == "in"), aes(id, end, label = valueFormat(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfallDataSet, type == "out"), aes(id, end, label = valueFormat(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfallDataSet, type == "net" & id == min(id)), aes(id, end, label = valueFormat(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfallDataSet, type == "net" & id == max(id)), aes(id, start, label = valueFormat(amount)), vjust = -0.5, size = 3) +
     labs(
       title = paste(chartTitle)
     )
