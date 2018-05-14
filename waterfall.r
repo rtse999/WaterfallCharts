@@ -4,7 +4,7 @@
 #
 # Location: /Users/raymondtse/Dropbox/Analysis/Waterfall Charts/waterfall.r
 # First created: 20:50 - Friday 30 March 2018
-# Last modified: 22:24 - Monday 14 May 2018
+# Last modified: 22:46 - Monday 14 May 2018
 # ------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------
@@ -25,6 +25,7 @@ library(tidyverse)
 # ------------------------------------------------------------------------
 # BACKLOG
 # ------------------------------------------------------------------------
+# Sort in/out columns by magnitude or by sort column
 # Change colour of text to white if over dark bar
 
 # ------------------------------------------------------------------------
@@ -52,6 +53,25 @@ balance$type <- factor(balance$type, levels = c("out", "in", "net"))
 balance <- balance[, c(3, 1, 4, 6, 5, 2)]
 
 glimpse(balance)
+
+nte <- data.frame(description = c("Total Contracts", "Invalid Contracts", "Don't Match NTE Role", 
+                                      "Within NTE Rate", "Events", "Exceeded Non Event Contracts"), 
+                      amount = c(988, -61, -312, -532, -35, 48))
+
+nte <- nte %>% 
+  mutate(description = as.factor(description),
+         id = row_number(),
+         type = factor(ifelse(amount > 0, "in", "out"),
+                       levels = c("in", "out", "net")),
+         end = cumsum(amount)
+  )
+
+nte[nte$description %in% c("Total Contracts", "Exceeded Non Event Contracts"), "type"] <- "net"
+nte$end <- c(head(nte$end, -1), 0)
+nte$start <- c(0, head(nte$end, -1))
+nte$type <- factor(nte$type, levels = c("out", "in", "net"))
+nte <- nte[, c(3, 1, 4, 6, 5, 2)]
+
 
 # ------------------------------------------------------------------------
 # Create Waterfall Chart function
@@ -106,3 +126,6 @@ waterfallChart <- function(waterfallDataSet,
 # Call Waterfall Chart function
 # ------------------------------------------------------------------------
 waterfallChart(balance, "Chart title for waterfall chart")
+waterfallChart(nte, "Not to Exceed Analysis of 2016/17 Contracts",
+               scaleFormat = scales::comma_format(), 
+               valueFormat = scales::comma)
