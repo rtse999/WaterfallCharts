@@ -4,7 +4,7 @@
 #
 # Location: /Users/raymondtse/Dropbox/Analysis/Waterfall Charts/waterfall.r
 # First created: 20:50 - Friday 30 March 2018
-# Last modified: 23:44 - Sunday 13 May 2018m
+# Last modified: 22:24 - Monday 14 May 2018
 # ------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------
@@ -25,9 +25,6 @@ library(tidyverse)
 # ------------------------------------------------------------------------
 # BACKLOG
 # ------------------------------------------------------------------------
-# Change colours of bars - dark grey (net), dark green (in), red (out)
-# Change colours - all grey
-# Change colours - parameterised
 # Change colour of text to white if over dark bar
 
 # ------------------------------------------------------------------------
@@ -61,7 +58,10 @@ glimpse(balance)
 # ------------------------------------------------------------------------
 waterfallChart <- function(waterfallDataSet, chartTitle = NULL, 
                            scaleFormat = scales::dollar_format(), 
-                           valueFormat = scales::dollar) {
+                           valueFormat = scales::dollar,
+                           netColour = "dark grey",
+                           inColour = "dark green",
+                           outColour = "red") {
 #
 # waterfallDataSet needs the following fields:
 # - id:           a numeric ID field 
@@ -76,6 +76,10 @@ waterfallChart <- function(waterfallDataSet, chartTitle = NULL,
 # chartTitle      a string
 # scaleFormat     scales::comma_format() or scales::dollar_format()
 # valueFormat     scales::comma or scales::dollar
+#
+# netColour       colour for starting and ending value bars
+# inColour        colour for positive bars
+# outColour       colour for negative bars
 #
   
   strwr <- function(str) gsub(" ", "\n", str)
@@ -93,7 +97,8 @@ waterfallChart <- function(waterfallDataSet, chartTitle = NULL,
     geom_text(data = filter(waterfallDataSet, type == "net" & id == max(id)), aes(id, start, label = valueFormat(amount)), vjust = -0.5, size = 3) +
     labs(
       title = paste(chartTitle)
-    )
+    ) +
+    scale_fill_manual(values = alpha(c(outColour, inColour, netColour, 0.3)))
 }
 
 # ------------------------------------------------------------------------
