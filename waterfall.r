@@ -25,11 +25,12 @@ library(tidyverse)
 # ------------------------------------------------------------------------
 # BACKLOG
 # ------------------------------------------------------------------------
-# Add Title
-# Add formatting option: comma, dollar, ...
+# Add formatting option: comma (comma(x), comma_format()), dollar (dollar(x), dollar_format()), ... 
+# - How do I parameterise a function ?
 # Change colours of bars - dark grey (net), dark green (in), red (out)
 # Change colours - all grey
-# Change colours - paramterised
+# Change colours - parameterised
+# Change colour of text to white if over dark bar
 
 # ------------------------------------------------------------------------
 # Sample Data
@@ -60,7 +61,7 @@ glimpse(balance)
 # ------------------------------------------------------------------------
 # Create Waterfall Chart function
 # ------------------------------------------------------------------------
-waterfallChart <- function(waterfallDataSet) {
+waterfallChart <- function(waterfallDataSet, chartTitle = NULL) {
 #
 # waterfallDataSet needs the following fields:
 # - id:           a numeric ID field 
@@ -85,10 +86,13 @@ waterfallChart <- function(waterfallDataSet) {
     geom_text(data = filter(waterfallDataSet, type == "in"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
     geom_text(data = filter(waterfallDataSet, type == "out"), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
     geom_text(data = filter(waterfallDataSet, type == "net" & id == min(id)), aes(id, end, label = scales::comma(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfallDataSet, type == "net" & id == max(id)), aes(id, start, label = scales::comma(amount)), vjust = -0.5, size = 3)
+    geom_text(data = filter(waterfallDataSet, type == "net" & id == max(id)), aes(id, start, label = scales::comma(amount)), vjust = -0.5, size = 3) +
+    labs(
+      title = paste(chartTitle)
+    )
 }
 
 # ------------------------------------------------------------------------
 # Call Waterfall Chart function
 # ------------------------------------------------------------------------
-waterfallChart(balance)
+waterfallChart(balance, "Chart title for waterfall chart")
