@@ -55,35 +55,16 @@ balance <- balance[, c(3, 1, 4, 6, 5, 2)]
 
 glimpse(balance)
 
-nte <- data.frame(description = c("Total Contracts", "Invalid Contracts", "Don't Match NTE Role", 
-                                      "Within NTE Rate", "Events", "Exceeded Non Event Contracts"), 
-                      amount = c(988, -61, -312, -532, -35, 48))
-
-nte <- nte %>% 
-  mutate(description = as.factor(description),
-         id = row_number(),
-         type = factor(ifelse(amount > 0, "in", "out"),
-                       levels = c("in", "out", "net")),
-         end = cumsum(amount)
-  )
-
-nte[nte$description %in% c("Total Contracts", "Exceeded Non Event Contracts"), "type"] <- "net"
-nte$end <- c(head(nte$end, -1), 0)
-nte$start <- c(0, head(nte$end, -1))
-nte$type <- factor(nte$type, levels = c("out", "in", "net"))
-nte <- nte[, c(3, 1, 4, 6, 5, 2)]
-
-
 # ------------------------------------------------------------------------
 # Create Waterfall Chart function
 # ------------------------------------------------------------------------
-waterfall_chart <- function(waterfall_data_set, 
+create_waterfall_chart <- function(waterfall_data_set, 
                            chart_title = NULL, 
                            scale_format = scales::dollar_format(), 
                            value_format = scales::dollar,
                            net_colour = "dark grey",
                            in_colour = "dark green",
-                           out_colour = "red") {
+                           out_colour = "red")  {
 #
 # waterfall_data_set needs the following fields:
 # - id:           a numeric ID field 
@@ -113,10 +94,18 @@ waterfall_chart <- function(waterfall_data_set,
     scale_x_discrete("", breaks = levels(waterfall_data_set$description),
                      labels = strwr(levels(waterfall_data_set$description))) +
     theme(legend.position = "none") +
-    geom_text(data = filter(waterfall_data_set, type == "in"), aes(id, end, label = value_format(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfall_data_set, type == "out"), aes(id, end, label = value_format(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfall_data_set, type == "net" & id == min(id)), aes(id, end, label = value_format(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfall_data_set, type == "net" & id == max(id)), aes(id, start, label = value_format(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfall_data_set, type == "in"), 
+              aes(id, end, label = value_format(amount)), 
+              vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfall_data_set, type == "out"), 
+              aes(id, end, label = value_format(amount)), 
+              vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfall_data_set, type == "net" & id == min(id)), 
+              aes(id, end, label = value_format(amount)), 
+              vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfall_data_set, type == "net" & id == max(id)), 
+              aes(id, start, label = value_format(amount)), 
+              vjust = -0.5, size = 3) +
     labs(
       title = paste(chart_title)
     ) +
@@ -126,7 +115,5 @@ waterfall_chart <- function(waterfall_data_set,
 # ------------------------------------------------------------------------
 # Call Waterfall Chart function
 # ------------------------------------------------------------------------
-waterfall_chart(balance, "Chart title for waterfall chart")
-waterfall_chart(nte, "Not to Exceed Analysis of 2016/17 Contracts",
-               scale_format = scales::comma_format(), 
-               value_format = scales::comma)
+create_waterfall_chart(balance, "Chart title for waterfall chart")
+
