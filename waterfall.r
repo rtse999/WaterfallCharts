@@ -4,7 +4,7 @@
 #
 # Location: /Users/raymondtse/Dropbox/Analysis/Waterfall Charts/waterfall.r
 # First created: 20:50 - Friday 30 March 2018
-# Last modified: 22:46 - Monday 14 May 2018
+# Last modified: 17:27 - Tuesday 15 May 2018
 # ------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------
@@ -26,6 +26,7 @@ library(tidyverse)
 # BACKLOG
 # ------------------------------------------------------------------------
 # Sort in/out columns by magnitude or by sort column
+# Fixing the colours when the chart doesn't have all 3 "in", "out", "net"
 # Change colour of text to white if over dark bar
 
 # ------------------------------------------------------------------------
@@ -76,15 +77,15 @@ nte <- nte[, c(3, 1, 4, 6, 5, 2)]
 # ------------------------------------------------------------------------
 # Create Waterfall Chart function
 # ------------------------------------------------------------------------
-waterfallChart <- function(waterfallDataSet, 
-                           chartTitle = NULL, 
-                           scaleFormat = scales::dollar_format(), 
-                           valueFormat = scales::dollar,
-                           netColour = "dark grey",
-                           inColour = "dark green",
-                           outColour = "red") {
+waterfall_chart <- function(waterfall_data_set, 
+                           chart_title = NULL, 
+                           scale_format = scales::dollar_format(), 
+                           value_format = scales::dollar,
+                           net_colour = "dark grey",
+                           in_colour = "dark green",
+                           out_colour = "red") {
 #
-# waterfallDataSet needs the following fields:
+# waterfall_data_set needs the following fields:
 # - id:           a numeric ID field 
 # - description:  labels for graph
 # - type:         has values "in" for positive values
@@ -94,38 +95,38 @@ waterfallChart <- function(waterfallDataSet,
 # - end:          balance at end of period / activity
 # - amount:       difference in balance between end and start of period / activity
 #
-# chartTitle      a string
-# scaleFormat     scales::comma_format() or scales::dollar_format()
-# valueFormat     scales::comma or scales::dollar
+# chart_title      a string
+# scale_format     scales::comma_format() or scales::dollar_format()
+# value_format     scales::comma or scales::dollar
 #
-# netColour       colour for starting and ending value bars
-# inColour        colour for positive bars
-# outColour       colour for negative bars
+# net_colour       colour for starting and ending value bars
+# in_colour        colour for positive bars
+# out_colour       colour for negative bars
 #
   
   strwr <- function(str) gsub(" ", "\n", str)
   
-  ggplot(waterfallDataSet, aes(fill = type)) +
+  ggplot(waterfall_data_set, aes(fill = type)) +
     geom_rect(aes(fct_inorder(description), xmin = id - 0.45, xmax = id + 0.45, ymin = end,
                   ymax = start)) +
-    scale_y_continuous("", labels = scaleFormat) +
-    scale_x_discrete("", breaks = levels(waterfallDataSet$description),
-                     labels = strwr(levels(waterfallDataSet$description))) +
+    scale_y_continuous("", labels = scale_format) +
+    scale_x_discrete("", breaks = levels(waterfall_data_set$description),
+                     labels = strwr(levels(waterfall_data_set$description))) +
     theme(legend.position = "none") +
-    geom_text(data = filter(waterfallDataSet, type == "in"), aes(id, end, label = valueFormat(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfallDataSet, type == "out"), aes(id, end, label = valueFormat(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfallDataSet, type == "net" & id == min(id)), aes(id, end, label = valueFormat(amount)), vjust = -0.5, size = 3) +
-    geom_text(data = filter(waterfallDataSet, type == "net" & id == max(id)), aes(id, start, label = valueFormat(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfall_data_set, type == "in"), aes(id, end, label = value_format(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfall_data_set, type == "out"), aes(id, end, label = value_format(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfall_data_set, type == "net" & id == min(id)), aes(id, end, label = value_format(amount)), vjust = -0.5, size = 3) +
+    geom_text(data = filter(waterfall_data_set, type == "net" & id == max(id)), aes(id, start, label = value_format(amount)), vjust = -0.5, size = 3) +
     labs(
-      title = paste(chartTitle)
+      title = paste(chart_title)
     ) +
-    scale_fill_manual(values = alpha(c(outColour, inColour, netColour, 0.3)))
+    scale_fill_manual(values = alpha(c(out_colour, in_colour, net_colour, 0.3)))
 }
 
 # ------------------------------------------------------------------------
 # Call Waterfall Chart function
 # ------------------------------------------------------------------------
-waterfallChart(balance, "Chart title for waterfall chart")
-waterfallChart(nte, "Not to Exceed Analysis of 2016/17 Contracts",
-               scaleFormat = scales::comma_format(), 
-               valueFormat = scales::comma)
+waterfall_chart(balance, "Chart title for waterfall chart")
+waterfall_chart(nte, "Not to Exceed Analysis of 2016/17 Contracts",
+               scale_format = scales::comma_format(), 
+               value_format = scales::comma)
