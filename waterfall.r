@@ -2,7 +2,6 @@
 # Creating Waterfall Charts using R & ggplot
 # Link: https://learnr.wordpress.com/2010/05/10/ggplot2-waterfall-charts/
 #
-# Location: /Users/raymondtse/Dropbox/Analysis/Waterfall Charts/waterfall.r
 # First created: 20:50 - Friday 30 March 2018
 # Last modified: 17:27 - Tuesday 15 May 2018
 # ------------------------------------------------------------------------
