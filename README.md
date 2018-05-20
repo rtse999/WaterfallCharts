@@ -12,7 +12,7 @@ This code is based on the [ggplot2: Waterfall Charts][2] blogpost from May 2010 
 
 - run with R 3.5.0 and ggplot2 2.2.1
 - run as a function
-- parameterise the y scale format and colours of bars by type (inflow, outflow, net balance
+- parameterise the y scale format and colours of bars by type (inflow, outflow, net balance)
 
 
 [1]: https://en.wikipedia.org/wiki/Waterfall_chart "Wikipedia: Waterfall Chart"
